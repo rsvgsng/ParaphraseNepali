@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paraphrase Nepali</title>
+</head>
+
+<body>
+
+    <h1 style="text-align: center;">Paraphrase Nepali Online (Alpha)</h1>
+
+    <h5>Enter text that needs to be Paraphrase!</h5>
+    <textarea style="width: 100%;" name="" id="" cols="90" rows="10"></textarea>
+    <br>
+    <div class="ll" style="display: flex;">
+        <button class="buttonMain" style="width:100%; padding: 10px;" id="btnPara">Paraphrase Now 🔥</button>
+        <button class="clearBTN" onclick="clearFields()" style="display:none;padding: 10px;margin-left: 10px;"
+            id="btnPara">Clear
+            ❌</button>
+    </div>
+
+    <br>
+    <div class="spinnerxx" style="display: none;">
+        <br>
+        <img style="height: 50px;" src="./loading.gif" alt="" srcset=""><br>
+        Processing....
+    </div>
+    <div style="display: none;" class="paraContainer">
+        <h3>Paraphased Text</h3>
+        <div id="paratext"></div>
+    </div>
+
+</body>
+
+<script>
+    function clearFields() {
+        document.querySelector('textarea').value = '';
+        document.querySelector('.paraContainer').style.display = 'none';
+        document.querySelector('.clearBTN').style.display = 'none';
+        document.querySelector('.buttonMain').style.width = '100%';
+    }
+    document.getElementById('btnPara').addEventListener('click', function () {
+        var input = document.querySelector('textarea').value;
+        if (input == '') {
+            alert('Please enter some text');
+            return;
+        }
+        var data = {
+            q: input
+        }
+        var spinner = document.querySelector('.spinnerxx');
+        spinner.style.display = 'block';
+        fetch('http://localhost:3000/ParaphaseNepali', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(response => response.json())
+            .then(data => {
+                var paraContainer = document.querySelector('.paraContainer');
+                paraContainer.style.display = 'block';
+                var paraContainer = document.querySelector('#paratext');
+                if (data?.status == 500) {
+                    paraContainer.innerHTML = 'Some error occured. Make sure the input is valid or Please try again later.';
+                    spinner.style.display = 'none';
+                    return;
+                }
+
+                paraContainer.innerHTML = data.res;
+                spinner.style.display = 'none';
+                document.querySelector('.clearBTN').style.display = 'block';
+                document.querySelector('.clearBTN').style.width = '20%';
+                document.querySelector('.buttonMain').style.width = '80%';
+
+            })
+    })
+
+</script>
+
+</html>
